@@ -15,6 +15,7 @@ public class ARPlaceObj : MonoBehaviour
     float latitude;
     float longitude;
 
+    Vector3 init;
     GameObject spawnedObj;
     ARRaycastManager _arRaycastManager;
     Vector2 touchPosition;
@@ -26,6 +27,7 @@ public class ARPlaceObj : MonoBehaviour
 
     private void Awake()
     {
+        init = Vector3.zero;
         firstClick=true;
         _arRaycastManager = GetComponent<ARRaycastManager>();
     }
@@ -64,6 +66,8 @@ public class ARPlaceObj : MonoBehaviour
                         firstClick=false;
                        latitude =  GPS.Instance.latitude;
                        longitude = GPS.Instance.longitude;
+                       init = createPoint(latitude,longitude);
+                       init  = Vector3.zero - init;
                     }
                     
                 }
@@ -77,11 +81,18 @@ public class ARPlaceObj : MonoBehaviour
             }
             else
             {
-                 position = createPoint(latitude,longitude);
+                 
+                  if(GPS.Instance.latitude!=0 && GPS.Instance.longitude!=0)
+                    {
+                       latitude =  GPS.Instance.latitude;
+                       longitude = GPS.Instance.longitude;
+                    }
+
+                position = createPoint(latitude,longitude);
                  log.text = position.ToString();
                 // Vector3 position =createPoint(GPS.Instance.latitude,GPS.Instance.longitude);
-                spawnedObj = Instantiate(gameobjectToInstance, position, hitPose.rotation);
-                // spawnedObj.transform.position = hitPose.position;
+                // spawnedObj = Instantiate(gameobjectToInstance, position, hitPose.rotation);
+                spawnedObj.transform.position = position + init;
             }
         }
     }
