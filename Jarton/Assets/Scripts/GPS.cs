@@ -6,8 +6,15 @@ using UnityEngine.Android;
 
 public class GPS : MonoBehaviour
 {
+    public static LocationInfo Instance ;
     public Text gpsOut;
     public bool isUpdating;
+
+
+    private void Start()
+    {
+        Instance = new LocationInfo();
+    }
     private void Update()
     {
         if (!isUpdating)
@@ -55,6 +62,7 @@ public class GPS : MonoBehaviour
         }
         else
         {
+            Instance = Input.location.lastData;
             gpsOut.text = "Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude+100f + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp;
             // Access granted and location value could be retrieved
             print("Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp);
