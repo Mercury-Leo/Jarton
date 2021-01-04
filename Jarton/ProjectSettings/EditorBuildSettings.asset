@@ -4,5 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Jarton.unity
+    guid: 96bed15017caf8d47ad69078313ceb80
+  m_configObjects:
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: c3e8b2cfe9f1df945ba492bb95cea629,
+      type: 2}
