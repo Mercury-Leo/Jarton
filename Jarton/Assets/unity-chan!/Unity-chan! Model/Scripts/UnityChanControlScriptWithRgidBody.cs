@@ -75,12 +75,29 @@ namespace UnityChan
 			orgVectColCenter = col.center;
 		}
 	
-	
+        public bool is_idle = false;
+        public bool is_walke=false;
+        public float speed=0;
+         public float circle = 0;
 		// 以下、メイン処理.リジッドボディと絡めるので、FixedUpdate内で処理を行う.
 		void FixedUpdate ()
 		{
-            Idle_anims(_animation_types.SIT.ToString(), 2);
-            //MoveChan(.2f, .2f);
+            if(is_idle)
+                Idle_anims(_animation_types.SIT.ToString(), 2);
+            if(is_walke)
+                MoveChan(circle,speed );
+            else
+            {
+                MoveChan(0,0);
+            }
+            if(speed == 0)
+            {
+                  MoveChan(circle,0);
+            }
+            if(circle == 0)
+            {
+                  MoveChan(0,speed);
+            }
         }
 
         public void ChangeAnimationState(string newState)
