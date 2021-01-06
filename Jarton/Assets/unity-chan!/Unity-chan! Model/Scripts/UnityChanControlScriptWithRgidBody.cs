@@ -26,6 +26,7 @@ namespace UnityChan
 
         bool used_spec = false;
 
+        Transform transform;
         public float animSpeed = 1.5f;				// アニメーション再生速度設定
 		public float lookSmoother = 3.0f;			// a smoothing setting for camera motion
 		public bool useCurves = true;				// Mecanimでカーブ調整を使うか設定する
@@ -52,8 +53,12 @@ namespace UnityChan
 		private Animator anim;							// キャラにアタッチされるアニメーターへの参照
 		private AnimatorStateInfo currentBaseState;			// base layerで使われる、アニメーターの現在の状態の参照
 
-		private GameObject cameraObject;	// メインカメラへの参照
-		
+		private GameObject cameraObject;    // メイン
+        Vector3 rotate;
+        bool walkflag = false;
+        bool rotateflag = false;
+        bool walkidle = false;
+        bool stopflag = true;
 		// アニメーター各ステートへの参照
 		static int idleState = Animator.StringToHash ("Base Layer.Idle");
 		static int locoState = Animator.StringToHash ("Base Layer.Locomotion");
@@ -68,36 +73,58 @@ namespace UnityChan
 			// CapsuleColliderコンポーネントを取得する（カプセル型コリジョン）
 			col = GetComponent<CapsuleCollider> ();
 			rb = GetComponent<Rigidbody> ();
+            transform = GetComponent<Transform>();
 			//メインカメラを取得する
 			cameraObject = GameObject.FindWithTag ("MainCamera");
 			// CapsuleColliderコンポーネントのHeight、Centerの初期値を保存する
 			orgColHight = col.height;
 			orgVectColCenter = col.center;
-		}
+            StartCoroutine(stop_look());
+
+        }
+
+
+        IEnumerator stop_look()
+        {
+            yield return new WaitForSeconds(3);
+
+            rotate = transform.eulerAngles;
+            rotate.y = 180f;
+            transform.eulerAngles = rotate;
+            Idle_anims(_animation_types.SHOW.ToString(), 1);
+            yield return new WaitForSeconds(6);
+            rotate = transform.eulerAngles;
+            rotate.y = 0f;
+            transform.eulerAngles = rotate;
+            ChangeAnimationState(_animation_states.Idle.ToString());
+            
+            yield return new WaitForSeconds(0.5f);
+            walkflag = true;
+            yield return new WaitForSeconds(5f);
+            walkflag = false;
+            ChangeAnimationState(_animation_states.Idle.ToString());
+
+            rotate = transform.eulerAngles;
+            rotate.y = 180f;
+            transform.eulerAngles = rotate;
+
+            Idle_anims(_animation_types.WAVE.ToString(), 1);
+
+            yield return new WaitForSeconds(0.5f);
+            ChangeAnimationState(_animation_states.Idle.ToString());
+            MoveChan(0f, 0f);
+            yield return new WaitForSeconds(10f);
+            Idle_anims(_animation_types.SIT.ToString(), 1);
+        }
 	
-        public bool is_idle = false;
-        public bool is_walke=false;
-        public float speed=0;
-         public float circle = 0;
 		// 以下、メイン処理.リジッドボディと絡めるので、FixedUpdate内で処理を行う.
 		void FixedUpdate ()
 		{
-            if(is_idle)
-                Idle_anims(_animation_types.SIT.ToString(), 2);
-            if(is_walke)
-                MoveChan(circle,speed );
-            else
-            {
-                MoveChan(0,0);
+
+            if (walkflag) {
+                MoveChan(0f, .2f);
             }
-            if(speed == 0)
-            {
-                  MoveChan(circle,0);
-            }
-            if(circle == 0)
-            {
-                  MoveChan(0,speed);
-            }
+                
         }
 
         public void ChangeAnimationState(string newState)
